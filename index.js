@@ -27,11 +27,26 @@ async function run() {
     const productCollection = client.db("furniro").collection("products");
 
     app.get("/products", async (req, res) => {
-      const result = await productCollection.find().toArray();
+      const limit = parseInt(req.query.limit);
+      const result = await productCollection.find().limit(limit).toArray();
       res.send(result);
     });
 
-    app.get("/products/:id", async (req, res) => {
+    // load products based on category
+    app.get("/products/:category", async (req, res) => {
+      const category = req.params.category;
+      console.log(category);
+      let result;
+      if (category == "default") {
+        result = await productCollection.find().toArray();
+      } else {
+        const query = { product_type: category };
+        result = await productCollection.find(query).toArray();
+      }
+      res.send(result);
+    });
+
+    app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await productCollection.findOne(query);
