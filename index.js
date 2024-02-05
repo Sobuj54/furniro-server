@@ -35,7 +35,6 @@ async function run() {
     // load products based on category
     app.get("/products/:category", async (req, res) => {
       const category = req.params.category;
-      console.log(category);
       let result;
       if (category == "default") {
         result = await productCollection.find().toArray();
@@ -43,6 +42,18 @@ async function run() {
         const query = { product_type: category };
         result = await productCollection.find(query).toArray();
       }
+      res.send(result);
+    });
+
+    // find similar products by category excluding current selected product
+    app.get("/related", async (req, res) => {
+      const { name, category } = req.query;
+      console.log({ name, category });
+      const query = {
+        product_name: { $ne: name }, //"ne" means "not equal"  this will exclude this product
+        product_type: category,
+      };
+      const result = await productCollection.find(query).toArray();
       res.send(result);
     });
 
