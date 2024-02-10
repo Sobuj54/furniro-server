@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
-const port = 5000;
+const port = process.env.PORT || 5000;
 const app = express();
 
 app.use(cors());
@@ -48,7 +48,6 @@ async function run() {
     // find similar products by category excluding current selected product
     app.get("/related", async (req, res) => {
       const { name, category } = req.query;
-      console.log({ name, category });
       const query = {
         product_name: { $ne: name }, //"ne" means "not equal"  this will exclude this product
         product_type: category,
